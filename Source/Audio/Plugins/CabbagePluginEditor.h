@@ -56,13 +56,7 @@
 class CabbagePluginEditor;
 
 //==============================================================================
-__attribute__ ((unused)) static CabbagePluginEditor* getPluginEditor (Component* child)
-{
-    if (CabbagePluginEditor* c = child->findParentComponentOfClass<CabbagePluginEditor>())
-        return c;
-    else
-        return nullptr;
-}
+
 
 //==============================================================================
 class CabbagePluginEditor
@@ -199,9 +193,9 @@ public:
     //=============================================================================
     CabbageAudioParameter* getParameterForComponent (const String name);
     //=============================================================================
-    void setLastOpenedDirectory (const String lastOpenedDirectory)
+    void setLastOpenedDirectory (const String newLastOpenedDirectory)
     {
-        this->lastOpenedDirectory = lastOpenedDirectory;
+        this->lastOpenedDirectory = newLastOpenedDirectory;
     }
     const String getLastOpenedDirectory() const
     {
@@ -303,10 +297,10 @@ private:
 
         void paint(Graphics &g)
         {
-            Viewport* const viewport = findParentComponentOfClass<Viewport>(); //Get the parent viewport
-            if(viewport != nullptr) //Check for nullness
+            Viewport* const viewportTmp = findParentComponentOfClass<Viewport>(); //Get the parent viewport
+            if(viewportTmp != nullptr) //Check for nullness
             {
-                juce::Rectangle<int> viewRect(viewport->getViewPositionX(), viewport->getViewPositionY(), viewport->getViewWidth(), viewport->getViewHeight()); //Get the current displayed area in the viewport
+                juce::Rectangle<int> viewRect(viewportTmp->getViewPositionX(), viewportTmp->getViewPositionY(), viewportTmp->getViewWidth(), viewportTmp->getViewHeight()); //Get the current displayed area in the viewport
             }
         }
     };

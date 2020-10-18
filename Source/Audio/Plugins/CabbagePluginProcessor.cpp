@@ -90,13 +90,13 @@ createPluginFilter() {
     else
         return new CabbagePluginProcessor(csdFile, AudioChannelSet::canonicalChannelSet(numInChannels), AudioChannelSet::canonicalChannelSet(numOutChannels));
 
-#endif
+#else
 
 	if (sideChainChannels != 0)
 		return new CabbagePluginProcessor(csdFile, AudioChannelSet::discreteChannels(numInChannels), AudioChannelSet::discreteChannels(numOutChannels), AudioChannelSet::discreteChannels(sideChainChannels));
 	else
 		return new CabbagePluginProcessor(csdFile, AudioChannelSet::discreteChannels(numInChannels), AudioChannelSet::discreteChannels(numOutChannels));
-
+#endif
 
     
 };
@@ -370,9 +370,9 @@ bool CabbagePluginProcessor::addImportFiles(StringArray &linesFromCsd) {
     bool hasImportFiles = false;
     for (int i = 0; i < linesFromCsd.size(); i++) {
         ValueTree temp("temp");
-        String newLine = linesFromCsd[i];
-        expandMacroText(newLine, temp);
-        CabbageWidgetData::setWidgetState(temp, newLine, 0);
+        String newLines = linesFromCsd[i];
+        expandMacroText(newLines, temp);
+        CabbageWidgetData::setWidgetState(temp, newLines, 0);
 
         //if form, check for import files..
         if (CabbageWidgetData::getStringProp(temp, CabbageIdentifierIds::type) == CabbageWidgetTypes::form) {
@@ -395,8 +395,8 @@ bool CabbagePluginProcessor::addImportFiles(StringArray &linesFromCsd) {
 
                     if (!xml) //if plain text...
                     {
-                        for (int y = linesFromImportedFile.size(); y >= 0; y--) {
-                            linesFromCsd.insert(i + 1, linesFromImportedFile[y]);
+                        for (int x = linesFromImportedFile.size(); x >= 0; x--) {
+                            linesFromCsd.insert(i + 1, linesFromImportedFile[x]);
                         }
                     } else//if plant xml
                     {
@@ -606,7 +606,7 @@ void CabbagePluginProcessor::generateCabbageCodeFromJS(PlantImportStruct &import
     engine.registerNativeObject("Cabbage", new CabbageJavaClass(this));
 
 
-    Result result = engine.execute(text.replace("$lt;", "<")
+    Result jsResult = engine.execute(text.replace("$lt;", "<")
                                            .replace("&amp;", "&")
                                            .replace("$quote;", "\"")
                                            .replace("$gt;", ">"));
@@ -614,8 +614,8 @@ void CabbagePluginProcessor::generateCabbageCodeFromJS(PlantImportStruct &import
 
     importData.cabbageCode.addLines(cabbageScriptGeneratedCode.joinIntoString("\n"));
 
-    if (result.failed())
-        CabbageUtilities::showMessage("javaScript Error:" + result.getErrorMessage(),
+    if (jsResult.failed())
+        CabbageUtilities::showMessage("javaScript Error:" + jsResult.getErrorMessage(),
                                       &getActiveEditor()->getLookAndFeel());
 
 }
@@ -662,9 +662,7 @@ void CabbagePluginProcessor::getMacros(StringArray& linesFromCsd) {
 
 void CabbagePluginProcessor::expandMacroText(String& line, ValueTree wData) {
     String csdLine;
-    var macroNames;
     String defineText;
-    String newLine = line;
     String expandedLine = line;
 
 
@@ -744,7 +742,7 @@ void CabbagePluginProcessor::createCabbageParameters()
                     CabbageWidgetData::getStringProp(cabbageWidgets.getChild(i), CabbageIdentifierIds::type))) {
                 if (typeOfWidget == CabbageWidgetTypes::xypad) 
 				{
-                    const var channel = CabbageWidgetData::getProperty(cabbageWidgets.getChild(i),
+                    const var curChannel = CabbageWidgetData::getProperty(cabbageWidgets.getChild(i),
                                                                        CabbageIdentifierIds::channel);
                     const float increment = CabbageWidgetData::getNumProp(cabbageWidgets.getChild(i),
                                                                           CabbageIdentifierIds::increment);
@@ -785,10 +783,10 @@ void CabbagePluginProcessor::createCabbageParameters()
                     }
                     
                     
-                    auto xParam = std::make_unique<CabbageAudioParameter>(this, cabbageWidgets.getChild(i), *getCsound(), channel[0],
+                    auto xParam = std::make_unique<CabbageAudioParameter>(this, cabbageWidgets.getChild(i), *getCsound(), curChannel[0],
                                                                           name + "_x", minX, maxX, value, increment, 1, automatable,
                                                                           xPrefix, xPostfix);
-                    auto yParam = std::make_unique<CabbageAudioParameter>(this, cabbageWidgets.getChild(i), *getCsound(), channel[1],
+                    auto yParam = std::make_unique<CabbageAudioParameter>(this, cabbageWidgets.getChild(i), *getCsound(), curChannel[1],
                                                                           name + "_y", minY, maxY, value, increment, 1, automatable,
                                                                           yPrefix, yPostfix);
                     
@@ -797,10 +795,10 @@ void CabbagePluginProcessor::createCabbageParameters()
                 } 
 				else if (typeOfWidget.contains("range")) 
 				{
-                    const var channel = CabbageWidgetData::getProperty(cabbageWidgets.getChild(i),
+                    const var curChannel = CabbageWidgetData::getProperty(cabbageWidgets.getChild(i),
                                                                        CabbageIdentifierIds::channel);
 
-                    if (channel.size() > 1) {
+                    if (curChannel.size() > 1) {
                         const float increment = CabbageWidgetData::getNumProp(cabbageWidgets.getChild(i),
                                                                               CabbageIdentifierIds::increment);
                         const int minValue = CabbageWidgetData::getNumProp(cabbageWidgets.getChild(i),
@@ -814,9 +812,9 @@ void CabbagePluginProcessor::createCabbageParameters()
                         const float max = CabbageWidgetData::getNumProp(cabbageWidgets.getChild(i),
                                                                         CabbageIdentifierIds::max);
                         
-                        auto minParam = std::make_unique<CabbageAudioParameter>(this, cabbageWidgets.getChild(i), *getCsound(), channel[0],
+                        auto minParam = std::make_unique<CabbageAudioParameter>(this, cabbageWidgets.getChild(i), *getCsound(), curChannel[0],
                                                                                 name + "_min", min, max, minValue, increment, skew, automatable, prefix, postfix);
-                        auto maxParam = std::make_unique<CabbageAudioParameter>(this, cabbageWidgets.getChild(i), *getCsound(), channel[1],
+                        auto maxParam = std::make_unique<CabbageAudioParameter>(this, cabbageWidgets.getChild(i), *getCsound(), curChannel[1],
                                                                                 name + "_max", min, max, maxValue, increment, skew, automatable, prefix, postfix);
                         
                         addCabbageParameter(std::move(minParam));

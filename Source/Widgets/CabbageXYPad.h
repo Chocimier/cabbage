@@ -152,61 +152,61 @@ public:
     {
         return name;
     }
-    void setDragLine (const Line<float>& dragLine)
+    void setDragLine (const Line<float>& dragLineNew)
     {
-        this->dragLine = dragLine;
+        this->dragLine = dragLineNew;
     }
-    void setIsPluginEditorOpen (bool isPluginEditorOpen)
+    void setIsPluginEditorOpen (bool isPluginEditorOpenNew)
     {
-        this->isPluginEditorOpen = isPluginEditorOpen;
+        this->isPluginEditorOpen = isPluginEditorOpenNew;
     }
-    void setName (const String& name)
+    void setName (const String& nameNew)
     {
-        this->name = name;
+        this->name = nameNew;
     }
-    void setPosition (const juce::Point<double>& position)
+    void setPosition (const juce::Point<double>& positionNew)
     {
-        this->position = position;
+        this->position = positionNew;
     }
-    void setRepaintBackground (bool repaintBackground)
+    void setRepaintBackground (bool repaintBackgroundNew)
     {
-        this->repaintBackground = repaintBackground;
+        this->repaintBackground = repaintBackgroundNew;
     }
-    void setVelocity (float velocity)
+    void setVelocity (float velocityNew)
     {
-        this->velocity = velocity;
+        this->velocity = velocityNew;
     }
-    void setXMax (float xMax)
+    void setXMax (float xMaxNew)
     {
-        this->xMax = xMax;
+        this->xMax = xMaxNew;
     }
-    void setXMin (float xMin)
+    void setXMin (float xMinNew)
     {
-        this->xMin = xMin;
+        this->xMin = xMinNew;
     }
-    void setXValue (float xValue)
+    void setXValue (float xValueNew)
     {
-        this->xValue = xValue;
+        this->xValue = xValueNew;
     }
-    void setXValueIncrement (float xValueIncrement)
+    void setXValueIncrement (float xValueIncrementNew)
     {
-        this->xValueIncrement = xValueIncrement;
+        this->xValueIncrement = xValueIncrementNew;
     }
-    void setYMax (float yMax)
+    void setYMax (float yMaxNew)
     {
-        this->yMax = yMax;
+        this->yMax = yMaxNew;
     }
-    void setYMin (float yMin)
+    void setYMin (float yMinNew)
     {
-        this->yMin = yMin;
+        this->yMin = yMinNew;
     }
-    void setYValue (float yValue)
+    void setYValue (float yValueNew)
     {
-        this->yValue = yValue;
+        this->yValue = yValueNew;
     }
-    void setYValueIncrement (float yValueIncrement)
+    void setYValueIncrement (float yValueIncrementNew)
     {
-        this->yValueIncrement = yValueIncrement;
+        this->yValueIncrement = yValueIncrementNew;
     }
     bool getIsPluginEditorOpen() const
     {

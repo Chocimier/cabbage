@@ -49,12 +49,12 @@ GenericCabbageEditor::GenericCabbageEditor (AudioProcessor& parent)
 
             controls.add (aSlider);  // [10]
         }
-        else if (const AudioParameterBool* param = dynamic_cast<AudioParameterBool*> (params[i])) // [11]
+        else if (const AudioParameterBool* currentParam = dynamic_cast<AudioParameterBool*> (params[i])) // [11]
         {
             ToggleButton* aButton;
 
-            paramToggles.add (aButton = new ToggleButton (param->name));
-            aButton->setToggleState (*param, dontSendNotification);
+            paramToggles.add (aButton = new ToggleButton (currentParam->name));
+            aButton->setToggleState (*currentParam, dontSendNotification);
 
             aButton->addListener (this);
             addAndMakeVisible (aButton);

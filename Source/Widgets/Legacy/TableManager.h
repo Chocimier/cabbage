@@ -410,21 +410,21 @@ public:
 
     HandleComponent* getPreviousHandle();
     HandleComponent* getNextHandle();
-    String changeMessage;
-    String mouseStatus;
-    double xPosRelative, yPosRelative;
-    bool status;
+    String changeMessage = {};
+    String mouseStatus = {};
+    double xPosRelative = 0.0, yPosRelative=0.0;
+    bool status = false;
 
 private:
-    Colour colour;
-    bool fixed;
-    double highResY;
-    int uniqueID;
+    Colour colour = {};
+    bool fixed = false;
+    double highResY = 0.0;
+    int uniqueID = 0;
 
     ComponentDragger dragger;
-    int lastX, lastY;
-    int offsetX, offsetY;
-    int genRoutine;
+    int lastX=0, lastY=0;
+    int offsetX=0, offsetY=0;
+    int genRoutine=0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HandleComponent);
 };

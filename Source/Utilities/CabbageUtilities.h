@@ -145,8 +145,8 @@ public:
         const float d = 5;
         g.setColour (isActive ? Colours::cornflowerblue.darker (.8f) : Colours::lime);
         Path p;
-        p.startNewSubPath (x + 5, y + h / 2.f + d / 2.f);
-        g.drawEllipse (x, y + h / 2.f, d, d, 2);
+        p.startNewSubPath (x + 5.f, y + h / 2.f + d / 2.f);
+        g.drawEllipse (x, y + h / 2.f, d, d, 2.f);
         g.drawEllipse (x + w, y + h / 2.f, d, d, 2.f);
 
         if (!isActive)
@@ -155,7 +155,7 @@ public:
         }
         else
         {
-            p.addArc (x + w, y + h / 2.f + d / 2.f, 5, 5, 3.14, 3.14);
+            p.addArc (x + w, y + h / 2.f + d / 2.f, 5.f, 5.f, 3.14f, 3.14f);
         }
 
         p.closeSubPath();
@@ -248,13 +248,13 @@ public:
         if (isPlaying == false)
         {
             g.setColour (Colours::white/*Colours::lime.darker()*/);
-            p.addTriangle (newWidth * .62f - scaleFactor, 2 - scaleFactor, newWidth - 5 + scaleFactor, newHeight / 2, newWidth * .62f - scaleFactor, newHeight - 3 + scaleFactor);
+            p.addTriangle (newWidth * .62f - scaleFactor, 2.f - scaleFactor, newWidth - 5.f + scaleFactor, newHeight / 2.f, newWidth * .62f - scaleFactor, newHeight - 3.f + scaleFactor);
 
         }
         else
         {
             g.setColour (Colours::white/*Colours::lime.darker (.7f)*/);
-            p.addRectangle (newWidth * .62f - scaleFactor, 4 - scaleFactor, newWidth * .3 + scaleFactor * 2, newHeight - 11 + scaleFactor);
+            p.addRectangle (newWidth * .62f - scaleFactor, 4.f - scaleFactor, newWidth * .3f + scaleFactor * 2.f, newHeight - 11.f + scaleFactor);
         }
 
         p.closeSubPath();
@@ -685,7 +685,6 @@ public:
         else
             return Justification::right;
 
-        return Justification::centred;
     }
 
     //===========================================================================================
@@ -713,7 +712,7 @@ public:
         
         for (int i = 0; i < linesize; i++) // let's find all the tokens in this line of code...
         {
-            while (i < linesize && code[i] != breakChar) // let's find the end of a token...
+            while (i < linesize && (char)code[i] != breakChar) // let's find the end of a token...
             {
                 if (code[i] == '\"')   // excuse anything in quotes..
                 {
@@ -1129,7 +1128,7 @@ public:
 		std::unique_ptr<XmlElement> data(valueTree.createXml());
         // only works when there are no objects in the array...
         //write new xml settings files based on data from user settings file, but using ValueTree
-        data->writeToFile (File (filePath), String());
+        //data->writeToFile (File (filePath), String());
     }
 
     //======= method for replacing the contents of an identifier with new values..

@@ -21,6 +21,13 @@
 #include "../CabbageCommonHeaders.h"
 #include "../Audio/Plugins/CabbagePluginEditor.h"
 
+__attribute__((unused)) static CabbagePluginEditor* getPluginEditor(Component* child)
+{
+    if (CabbagePluginEditor* c = child->findParentComponentOfClass<CabbagePluginEditor>())
+        return c;
+    else
+        return nullptr;
+}
 
 void CabbageWidgetBase::initialiseCommonAttributes (Component* child, ValueTree data)
 {
@@ -210,19 +217,19 @@ int CabbageWidgetBase::getSVGHeight (File svgFile)
 }
 
 String CabbageWidgetBase::createPopupBubbleText(double val, int decimalPlaces,
-                                                const String& channel,
+                                                const String& widgetChannel,
                                                 const String& escapedPrefix,
                                                 const String& escapedPostfix)
 {
     String popupText;
-    auto tooltipText = getTooltipText();
+    auto tooltipTextTmp = getTooltipText();
     
-    if (tooltipText.isNotEmpty())
-        popupText = tooltipText;
+    if (tooltipTextTmp.isNotEmpty())
+        popupText = tooltipTextTmp;
     else if ( escapedPostfix.isNotEmpty() || escapedPrefix.isNotEmpty() )
         popupText = createValueText(val, decimalPlaces, escapedPrefix, escapedPostfix);
     else
-        popupText = channel + ": " + createValueText(val, decimalPlaces);
+        popupText = widgetChannel + ": " + createValueText(val, decimalPlaces);
     
     return popupText;
 }

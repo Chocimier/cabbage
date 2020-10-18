@@ -72,8 +72,8 @@ CabbageSignalDisplay::CabbageSignalDisplay (ValueTree wData, CabbagePluginEditor
         addAndMakeVisible (zoomOutButton);
     }
 
-    const int updateRate = CabbageWidgetData::getNumProp(wData, CabbageIdentifierIds::updaterate);
-    startTimer (updateRate);
+    const int uRate = CabbageWidgetData::getNumProp(wData, CabbageIdentifierIds::updaterate);
+    startTimer (uRate);
 }
 
 //====================================================================================
@@ -306,19 +306,19 @@ void CabbageSignalDisplay::timerCallback()
     if (owner->shouldUpdateSignalDisplay(variable))
     {
         
-        const String displayType = CabbageWidgetData::getStringProp (widgetData, CabbageIdentifierIds::displaytype);
+        const String displayTypeTmp = CabbageWidgetData::getStringProp (widgetData, CabbageIdentifierIds::displaytype);
 
-        if (displayType != "lissajous")
+        if (displayTypeTmp != "lissajous")
         {
-            setSignalFloatArray (owner->getArrayForSignalDisplay (variable, displayType));
+            setSignalFloatArray (owner->getArrayForSignalDisplay (variable, displayTypeTmp));
         }
         else
         {
-            var signalVariables = CabbageWidgetData::getProperty (widgetData, CabbageIdentifierIds::signalvariable);
+            var signalVars = CabbageWidgetData::getProperty (widgetData, CabbageIdentifierIds::signalvariable);
 
-            if (signalVariables.size() == 2)
-                setSignalFloatArraysForLissajous (owner->getArrayForSignalDisplay (signalVariables[0], displayType),
-                                                  owner->getArrayForSignalDisplay (signalVariables[1], displayType));
+            if (signalVars.size() == 2)
+                setSignalFloatArraysForLissajous (owner->getArrayForSignalDisplay (signalVars[0], displayTypeTmp),
+                                                  owner->getArrayForSignalDisplay (signalVars[1], displayTypeTmp));
 
         }
 
@@ -327,7 +327,7 @@ void CabbageSignalDisplay::timerCallback()
 }
 
 //====================================================================================
-void CabbageSignalDisplay::showPopup (String text)
+void CabbageSignalDisplay::showPopup (String /*text*/)
 {
 
 }

@@ -114,7 +114,7 @@ bool CsoundPluginProcessor::setupAndCompileCsound(File currentCsdFile, File file
     //int test = csound->SetGlobalEnv("OPCODE6DIR64", );
     CabbageUtilities::debug("Env var set");
     //csoundSetOpcodedir("/Library/Frameworks/CsoundLib64.framework/Versions/6.0/Resources/Opcodes64");
-    Logger::writeToLog(String::formatted("Resetting csound ...\ncsound = 0x%x", long(csound.get())));
+    Logger::writeToLog(String::formatted("Resetting csound ...\ncsound = 0x%p", (csound.get())));
 	csound.reset (new Csound());
     
 	csdFilePath = filePath;
@@ -226,9 +226,9 @@ bool CsoundPluginProcessor::setupAndCompileCsound(File currentCsdFile, File file
 }
 
 
-void CsoundPluginProcessor::createFileLogger (File csdFile)
+void CsoundPluginProcessor::createFileLogger (File currentCsdFile)
 {
-    String logFileName = csdFile.getParentDirectory().getFullPathName() + String ("/") + csdFile.getFileNameWithoutExtension() + String ("_Log.txt");
+    String logFileName = currentCsdFile.getParentDirectory().getFullPathName() + String ("/") + currentCsdFile.getFileNameWithoutExtension() + String ("_Log.txt");
     fileLogger.reset (new FileLogger (File (logFileName), String ("Cabbage Log..")));
     Logger::setCurrentLogger (fileLogger.get());
 }
@@ -243,8 +243,8 @@ void CsoundPluginProcessor::initAllCsoundChannels (ValueTree cabbageData)
     }
     else
     {
-        Logger::writeToLog(String::formatted("csound = 0x%x", long(csound.get())));
-        Logger::writeToLog(String::formatted("handle = 0x%x", long(csound->GetCsound())));
+        Logger::writeToLog(String::formatted("csound = 0x%p", csound.get()));
+        Logger::writeToLog(String::formatted("handle = 0x%p", csound->GetCsound()));
     }
     
     if (!csdCompiledWithoutError())
@@ -824,18 +824,18 @@ void CsoundPluginProcessor::sendHostDataToCsound()
 //    {
         if (AudioPlayHead* const ph = getPlayHead())
         {
-            AudioPlayHead::CurrentPositionInfo hostInfo;
+            AudioPlayHead::CurrentPositionInfo audioHostInfo;
             
-            if (ph->getCurrentPosition (hostInfo))
+            if (ph->getCurrentPosition (audioHostInfo))
             {
-                csound->SetChannel (CabbageIdentifierIds::hostbpm.toUTF8(), hostInfo.bpm);
-                csound->SetChannel (CabbageIdentifierIds::timeinseconds.toUTF8(), hostInfo.timeInSeconds);
-                csound->SetChannel (CabbageIdentifierIds::isplaying.toUTF8(), hostInfo.isPlaying);
-                csound->SetChannel (CabbageIdentifierIds::isrecording.toUTF8(), hostInfo.isRecording);
-                csound->SetChannel (CabbageIdentifierIds::hostppqpos.toUTF8(), hostInfo.ppqPosition);
-                csound->SetChannel (CabbageIdentifierIds::timeinsamples.toUTF8(), hostInfo.timeInSamples);
-                csound->SetChannel (CabbageIdentifierIds::timeSigDenom.toUTF8(), hostInfo.timeSigDenominator);
-                csound->SetChannel (CabbageIdentifierIds::timeSigNum.toUTF8(), hostInfo.timeSigNumerator);
+                csound->SetChannel (CabbageIdentifierIds::hostbpm.toUTF8(), audioHostInfo.bpm);
+                csound->SetChannel (CabbageIdentifierIds::timeinseconds.toUTF8(), audioHostInfo.timeInSeconds);
+                csound->SetChannel (CabbageIdentifierIds::isplaying.toUTF8(), audioHostInfo.isPlaying);
+                csound->SetChannel (CabbageIdentifierIds::isrecording.toUTF8(), audioHostInfo.isRecording);
+                csound->SetChannel (CabbageIdentifierIds::hostppqpos.toUTF8(), audioHostInfo.ppqPosition);
+                csound->SetChannel (CabbageIdentifierIds::timeinsamples.toUTF8(), audioHostInfo.timeInSamples);
+                csound->SetChannel (CabbageIdentifierIds::timeSigDenom.toUTF8(), audioHostInfo.timeSigDenominator);
+                csound->SetChannel (CabbageIdentifierIds::timeSigNum.toUTF8(), audioHostInfo.timeSigNumerator);
             }
         }
 //    }
@@ -1275,10 +1275,10 @@ void CsoundPluginProcessor::makeGraphCallback (CSOUND* csound, WINDAT* windat, c
 
     if (addDisplay && !String(windat->caption).contains("ftable"))
     {
-        const String name = String(windat->caption).substring(String(windat->caption).indexOf("signal ")+7);
-        const int posColon = String(name).indexOf(":");
-        const int posComma = String(name).indexOf(",");
-        const String variableName = name.substring(0, posColon<posComma ? posColon : posComma);
+        const String graphName = String(windat->caption).substring(String(windat->caption).indexOf("signal ")+7);
+        const int posColon = String(graphName).indexOf(":");
+        const int posComma = String(graphName).indexOf(",");
+        const String variableName = graphName.substring(0, posColon<posComma ? posColon : posComma);
         display->variableName = variableName;
         ud->signalArrays.add (display);
         ud->updateSignalDisplay.set(variableName, false);

@@ -716,7 +716,7 @@ void GenTable::showScrollbar (bool show)
 
 //==============================================================================
 
-void GenTable::scrollBarMoved (ScrollBar* scrollBarThatHasMoved, double newRangeStart)
+void GenTable::scrollBarMoved (ScrollBar* /*scrollBarThatHasMoved*/, double /*newRangeStart*/)
 {
     //visibleRange = visibleRange.movedToStartAt (newRangeStart);
     //setRange (visibleRange.movedToStartAt (newRangeStart), true);
@@ -995,8 +995,6 @@ const Image GenTable::drawGridImage (bool redraw, double width, double height, d
     {
         return Image();
     }
-
-    return Image();
 }
 
 //==============================================================================
@@ -1371,7 +1369,7 @@ void HandleViewer::insertHandle (double x, double y, Colour handleColour)
     //add a handle component to our handleViewer. This should be combined with
     //above function...
 
-    int indx;
+    int indx = 0;
     GenTable* table = findParentComponentOfClass <GenTable>();
 
     if (table)
@@ -1601,6 +1599,7 @@ HandleComponent::HandleComponent (double xPos, double yPos, int _index, bool fix
     //we convert them to pixel positions later, based on the size of the handleViewer
     xPosRelative = xPos;
     yPosRelative = yPos;
+
     genRoutine = gen;
     this->setInterceptsMouseClicks (true, false);
     setSize (12, 12);

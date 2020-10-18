@@ -172,9 +172,9 @@ public:
     void addMacros (String csdText);
     const String getCsoundOutput();
 
-    void compileCsdFile (File csdFile)
+    void compileCsdFile (File csdFileNew)
     {
-        csCompileResult = csound->Compile (const_cast<char*> (csdFile.getFullPathName().toUTF8().getAddress()));
+        csCompileResult = csound->Compile (const_cast<char*> (csdFileNew.getFullPathName().toUTF8().getAddress()));
     }
 
     void compileCsdString (String csdFileText)
