@@ -669,9 +669,6 @@ public:
         else if (x < 0)
             x = ceil (x * power - 0.5) / power;
 
-        if (x == -0)
-            x = 0;
-
         return x;
     }
 

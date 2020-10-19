@@ -306,8 +306,8 @@ public:
     ~HandleViewer();
     std::unique_ptr<TextButton> button1;
     std::unique_ptr<TextButton> button2;
-    void mouseDown (const MouseEvent& e);
-    void mouseDrag (const MouseEvent& e);
+    void mouseDown (const MouseEvent& e) override;
+    void mouseDrag (const MouseEvent& e) override;
     void positionHandle (const MouseEvent& e);
     void repaint (Graphics& g);
     void resized();
@@ -409,7 +409,7 @@ public:
     }
 
     HandleComponent* getPreviousHandle();
-    HandleComponent* getNextHandle();
+    HandleComponent* getNextHandle(); 
     String changeMessage = {};
     String mouseStatus = {};
     double xPosRelative = 0.0, yPosRelative=0.0;

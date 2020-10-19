@@ -25,9 +25,9 @@ CabbagePluginEditor::CabbagePluginEditor (CabbagePluginProcessor& p)
     : AudioProcessorEditor (&p),
       mainComponent(this),
       lookAndFeel(),
-      processor (p)
+      cabbageProcessor (p)
 #ifdef Cabbage_IDE_Build
-    , layoutEditor (processor.cabbageWidgets)
+    , layoutEditor (cabbageProcessor.cabbageWidgets)
 #endif
 {
     setName ("PluginEditor");
@@ -44,7 +44,7 @@ CabbagePluginEditor::CabbagePluginEditor (CabbagePluginProcessor& p)
     setSize (50, 50);
 	mainComponent.addKeyListener(this);
 	mainComponent.setWantsKeyboardFocus(true);
-    createEditorInterface (processor.cabbageWidgets);
+    createEditorInterface (cabbageProcessor.cabbageWidgets);
 
 #ifdef Cabbage_IDE_Build
     viewportContainer->addAndMakeVisible (layoutEditor);
@@ -57,7 +57,7 @@ CabbagePluginEditor::CabbagePluginEditor (CabbagePluginProcessor& p)
     resized();
 
     tooltipWindow.getObject().setLookAndFeel(&lookAndFeel);
-    processor.getCsound()->SetChannel ("IS_EDITOR_OPEN", 1.0);
+    cabbageProcessor.getCsound()->SetChannel ("IS_EDITOR_OPEN", 1.0);
 }
 
 CabbagePluginEditor::~CabbagePluginEditor()
@@ -67,7 +67,7 @@ CabbagePluginEditor::~CabbagePluginEditor()
     radioGroups.clear();
     radioComponents.clear();
     setLookAndFeel (nullptr);
-    processor.getCsound()->SetChannel ("IS_EDITOR_OPEN", 0.0);
+    cabbageProcessor.getCsound()->SetChannel ("IS_EDITOR_OPEN", 0.0);
 }
 
 void CabbagePluginEditor::refreshValueTreeListeners()
@@ -76,7 +76,7 @@ void CabbagePluginEditor::refreshValueTreeListeners()
 	for (int i = 0; i < components.size(); i++)
 	{
 		if(ValueTree::Listener* valueTreeListener = dynamic_cast<ValueTree::Listener*>(components[i]))
-			processor.cabbageWidgets.addListener(valueTreeListener);
+            cabbageProcessor.cabbageWidgets.addListener(valueTreeListener);
 	}
 }
 void CabbagePluginEditor::resized()
@@ -213,17 +213,17 @@ void CabbagePluginEditor::addNewWidget (String widgetType, juce::Point<int> posi
 
     if(isCustomPlant == false)
     {
-        StringArray csdArray = processor.getCurrentCsdFileAsStringArray();
+        StringArray csdArray = cabbageProcessor.getCurrentCsdFileAsStringArray();
         const String widgetTreeIdentifier = "newlyAddedWidget";
         ValueTree newWidget(widgetTreeIdentifier);
 
         CabbageWidgetData::setWidgetState(newWidget, widgetType, newlyAddedWidgetIndex);
         CabbageWidgetData::setStringProp(newWidget, CabbageIdentifierIds::csdfile,
-                                         processor.getCsdFile().getFullPathName());
+            cabbageProcessor.getCsdFile().getFullPathName());
         newWidget.setProperty(CabbageIdentifierIds::top, position.getY(), 0);
         newWidget.setProperty(CabbageIdentifierIds::left, position.getX(), 0);
 
-        processor.cabbageWidgets.addChild(newWidget, -1, 0);
+        cabbageProcessor.cabbageWidgets.addChild(newWidget, -1, 0);
 
         setCurrentlySelectedComponents(
                 StringArray(CabbageWidgetData::getStringProp(newWidget, CabbageIdentifierIds::name)));
@@ -413,7 +413,7 @@ void CabbagePluginEditor::insertTextEditor (ValueTree cabbageWidgetData)
 void CabbagePluginEditor::insertSoundfiler (ValueTree cabbageWidgetData)
 {
     CabbageSoundfiler* soundfiler;
-    components.add (soundfiler = new CabbageSoundfiler (cabbageWidgetData, this, processor.getSampleRate()));
+    components.add (soundfiler = new CabbageSoundfiler (cabbageWidgetData, this, cabbageProcessor.getSampleRate()));
     addToEditorAndMakeVisible (soundfiler, cabbageWidgetData);
     addMouseListenerAndSetVisibility (soundfiler, cabbageWidgetData);
 }
@@ -442,7 +442,7 @@ void CabbagePluginEditor::insertXYPad (ValueTree cabbageWidgetData)
     xyPad->getSliderX().addListener (this);
     xyPad->getSliderY().addListener (this);
     addToEditorAndMakeVisible (xyPad, cabbageWidgetData);
-    processor.addXYAutomator (xyPad, cabbageWidgetData);
+    cabbageProcessor.addXYAutomator (xyPad, cabbageWidgetData);
     addMouseListenerAndSetVisibility (xyPad, cabbageWidgetData);
 }
 
@@ -521,7 +521,7 @@ void CabbagePluginEditor::insertKeyboard (ValueTree cabbageWidgetData)
     if (keyboardCount < 1)
     {
         CabbageKeyboard* midiKeyboard;
-        components.add (midiKeyboard = new CabbageKeyboard (cabbageWidgetData, processor.keyboardState));
+        components.add (midiKeyboard = new CabbageKeyboard (cabbageWidgetData, cabbageProcessor.keyboardState));
         //midiKeyboard->setKeyPressBaseOctave (3); // <-- now you can set this with 'keypressbaseoctave' identifier
         
 #ifndef Cabbage_IDE_Build
@@ -598,7 +598,7 @@ void CabbagePluginEditor::insertLight (ValueTree cabbageWidgetData)
 //======================================================================================================
 CabbageAudioParameter* CabbagePluginEditor::getParameterForComponent (const String name)
 {
-    for (auto param : processor.getCabbageParameters())
+    for (auto param : cabbageProcessor.getCabbageParameters())
     {
         if (CabbageAudioParameter* cabbageParam = dynamic_cast<CabbageAudioParameter*> (param))
         {
@@ -635,7 +635,7 @@ void CabbagePluginEditor::buttonClicked(Button* button)
 	if (CabbageButton* cabbageButton = dynamic_cast<CabbageButton*> (button))
 	{
 		const StringArray textItems = cabbageButton->getTextArray();
-		const ValueTree valueTree = CabbageWidgetData::getValueTreeForComponent(processor.cabbageWidgets, cabbageButton->getName());
+		const ValueTree valueTree = CabbageWidgetData::getValueTreeForComponent(cabbageProcessor.cabbageWidgets, cabbageButton->getName());
 		const int latched = CabbageWidgetData::getNumProp(valueTree, CabbageIdentifierIds::latched);
 
 		if (textItems.size() > 0)
@@ -649,7 +649,7 @@ void CabbagePluginEditor::buttonClicked(Button* button)
 	else if (CabbageCheckbox* cabbageCheckBox = dynamic_cast<CabbageCheckbox*> (button))
 	{
 		const StringArray textItems = cabbageCheckBox->getTextArray();
-		const ValueTree valueTree = CabbageWidgetData::getValueTreeForComponent(processor.cabbageWidgets, cabbageCheckBox->getName());
+		const ValueTree valueTree = CabbageWidgetData::getValueTreeForComponent(cabbageProcessor.cabbageWidgets, cabbageCheckBox->getName());
 		// const int latched = CabbageWidgetData::getNumProp(valueTree, CabbageIdentifierIds::latched);
 
 		if (textItems.size() > 0)
@@ -666,7 +666,7 @@ void CabbagePluginEditor::buttonStateChanged(Button* button)
 {
 	if (CabbageButton* cabbageButton = dynamic_cast<CabbageButton*> (button))
 	{
-		const ValueTree valueTree = CabbageWidgetData::getValueTreeForComponent(processor.cabbageWidgets, cabbageButton->getName());
+		const ValueTree valueTree = CabbageWidgetData::getValueTreeForComponent(cabbageProcessor.cabbageWidgets, cabbageButton->getName());
 		const int latched = CabbageWidgetData::getNumProp(valueTree, CabbageIdentifierIds::latched);
 
 		if (latched == 0)
@@ -745,7 +745,7 @@ void CabbagePluginEditor::sliderDragStarted(Slider* slider)
 void CabbagePluginEditor::sliderDragEnded(Slider* slider)
 {
     // If the Csound pointer is null then the given slider is invalid and should not be used (its private pimpl pointer is null and will cause a crash).
-    if (!processor.getCsound())
+    if (!cabbageProcessor.getCsound())
         return;
     
     if (slider->getSliderStyle() != Slider::TwoValueHorizontal && slider->getSliderStyle() != Slider::TwoValueVertical)
@@ -809,7 +809,7 @@ Array<ValueTree> CabbagePluginEditor::getValueTreesForCurrentlySelectedComponent
     Array<ValueTree> valueTreeArray;
 
     for (String compName : currentlySelectedComponentNames)
-        valueTreeArray.add (CabbageWidgetData::getValueTreeForComponent (processor.cabbageWidgets, compName));
+        valueTreeArray.add (CabbageWidgetData::getValueTreeForComponent (cabbageProcessor.cabbageWidgets, compName));
 
     return valueTreeArray;
 }
@@ -819,10 +819,10 @@ ValueTree CabbagePluginEditor::getValueTreeForComponent (String compName)
     if(compName == "form")//special case
     {
         resetCurrentlySelectedComponents();
-        return CabbageWidgetData::getValueTreeForComponent (processor.cabbageWidgets, "form");
+        return CabbageWidgetData::getValueTreeForComponent (cabbageProcessor.cabbageWidgets, "form");
     }
     else
-        return CabbageWidgetData::getValueTreeForComponent (processor.cabbageWidgets, getComponentFromName (compName)->getName());
+        return CabbageWidgetData::getValueTreeForComponent (cabbageProcessor.cabbageWidgets, getComponentFromName (compName)->getName());
 }
 
 void CabbagePluginEditor::updateLayoutEditorFrames()
@@ -883,7 +883,7 @@ void CabbagePluginEditor::addPlantToPopupPlantsArray (ValueTree wData, Component
 //======================================================================================================
 void CabbagePluginEditor::updatefTableData (GenTable* table)
 {
-    if (!processor.getCsound())
+    if (!cabbageProcessor.getCsound())
         return;
     
     Array<double> pFields = table->getPfields();
@@ -938,14 +938,14 @@ void CabbagePluginEditor::updatefTableData (GenTable* table)
         fStatement.set (1, String (table->tableNumber));
         fStatement.set (0, "f");
 
-        processor.getCsound()->GetCsound()->hfgens (processor.getCsound()->GetCsound(), &ftpp, &evt, 1);
+        cabbageProcessor.getCsound()->GetCsound()->hfgens (cabbageProcessor.getCsound()->GetCsound(), &ftpp, &evt, 1);
         Array<float, CriticalSection> points;
 
         points = Array<float, CriticalSection> (ftpp->ftable, ftpp->flen);
         table->setWaveform (points, false);
         //table->enableEditMode(fStatement);
 
-        processor.getCsound()->InputMessage (fStatement.joinIntoString (" ").toUTF8());
+        cabbageProcessor.getCsound()->InputMessage (fStatement.joinIntoString (" ").toUTF8());
     }
 
 }
@@ -953,70 +953,70 @@ void CabbagePluginEditor::updatefTableData (GenTable* table)
 //======================================================================================================
 void CabbagePluginEditor::sendChannelDataToCsound (String channel, float value)
 {
-    if (csdCompiledWithoutError() && processor.getCsound())
-        processor.getCsound()->SetChannel (channel.getCharPointer(), value);
+    if (csdCompiledWithoutError() && cabbageProcessor.getCsound())
+        cabbageProcessor.getCsound()->SetChannel (channel.getCharPointer(), value);
 }
 
 float CabbagePluginEditor::getChannelDataFromCsound (String channel)
 {
-    if (csdCompiledWithoutError() && processor.getCsound())
-        return processor.getCsound()->GetChannel (channel.getCharPointer());
+    if (csdCompiledWithoutError() && cabbageProcessor.getCsound())
+        return cabbageProcessor.getCsound()->GetChannel (channel.getCharPointer());
     
     return 0;
 }
 
 void CabbagePluginEditor::sendChannelStringDataToCsound (String channel, String value)
 {
-    if (processor.csdCompiledWithoutError() && processor.getCsound())
-        processor.getCsound()->SetChannel (channel.getCharPointer(), value.toUTF8().getAddress());
+    if (cabbageProcessor.csdCompiledWithoutError() && cabbageProcessor.getCsound())
+        cabbageProcessor.getCsound()->SetChannel (channel.getCharPointer(), value.toUTF8().getAddress());
 }
 
 void CabbagePluginEditor::sendScoreEventToCsound (String scoreEvent)
 {
-    if (processor.csdCompiledWithoutError() && processor.getCsound())
-        processor.getCsound()->InputMessage(scoreEvent.toUTF8());
+    if (cabbageProcessor.csdCompiledWithoutError() && cabbageProcessor.getCsound())
+        cabbageProcessor.getCsound()->InputMessage(scoreEvent.toUTF8());
 }
 
 void CabbagePluginEditor::createEventMatrix(int cols, int rows, String channel)
 {
-    if (processor.csdCompiledWithoutError())
-        processor.createMatrixEventSequencer(cols, rows, channel);
+    if (cabbageProcessor.csdCompiledWithoutError())
+        cabbageProcessor.createMatrixEventSequencer(cols, rows, channel);
 }
 
 void CabbagePluginEditor::setEventMatrixData(int cols, int rows, String channel, String data)
 {
-    if (processor.csdCompiledWithoutError())
-        processor.setMatrixEventSequencerCellData(cols, rows, channel, data);
+    if (cabbageProcessor.csdCompiledWithoutError())
+        cabbageProcessor.setMatrixEventSequencerCellData(cols, rows, channel, data);
 }
 
 
 const Array<float, CriticalSection> CabbagePluginEditor::getArrayForSignalDisplay (const String signalVariable, const String displayType)
 {
     if (csdCompiledWithoutError())
-        return processor.getSignalArray (signalVariable, displayType)->getPoints();
+        return cabbageProcessor.getSignalArray (signalVariable, displayType)->getPoints();
 
     return Array<float, CriticalSection>();
 }
 
 bool CabbagePluginEditor::shouldUpdateSignalDisplay(String signalVariableName)
 {
-    return processor.shouldUpdateSignalDisplay(signalVariableName);
+    return cabbageProcessor.shouldUpdateSignalDisplay(signalVariableName);
 }
 
 void CabbagePluginEditor::enableXYAutomator (String name, bool enable, Line<float> dragLine)
 {
-    processor.enableXYAutomator (name, enable, dragLine);
+    cabbageProcessor.enableXYAutomator (name, enable, dragLine);
 }
 
 bool CabbagePluginEditor::csdCompiledWithoutError()
 {
-    return processor.csdCompiledWithoutError();
+    return cabbageProcessor.csdCompiledWithoutError();
 }
 
 StringArray CabbagePluginEditor::getTableStatement (int tableNumber)
 {
     if (csdCompiledWithoutError())
-        return processor.getTableStatement (tableNumber);
+        return cabbageProcessor.getTableStatement (tableNumber);
 
     return StringArray();
 }
@@ -1024,19 +1024,19 @@ StringArray CabbagePluginEditor::getTableStatement (int tableNumber)
 const Array<float, CriticalSection> CabbagePluginEditor::getTableFloats (int tableNumber)
 {
     if (csdCompiledWithoutError())
-        return processor.getTableFloats (tableNumber);
+        return cabbageProcessor.getTableFloats (tableNumber);
 
     return Array<float, CriticalSection>();
 }
 
 CabbagePluginProcessor& CabbagePluginEditor::getProcessor()
 {
-    return processor;
+    return cabbageProcessor;
 }
 
 void CabbagePluginEditor::savePluginStateToFile (File snapshotFile, String presetName)
 {
-    XmlElement xml = processor.savePluginState (instrumentName.replace (" ", "_"), snapshotFile, presetName);
+    XmlElement xml = cabbageProcessor.savePluginState (instrumentName.replace (" ", "_"), snapshotFile, presetName);
     xml.writeTo(snapshotFile);
 }
 
@@ -1049,7 +1049,7 @@ void CabbagePluginEditor::restorePluginStateFrom (String childPreset, File xmlFi
         forEachXmlChildElement (*xmlElement, e)
         {
             if (e->getStringAttribute ("PresetName") == childPreset)
-                processor.restorePluginState (e);
+                cabbageProcessor.restorePluginState (e);
         }
     }
 
@@ -1057,21 +1057,21 @@ void CabbagePluginEditor::restorePluginStateFrom (String childPreset, File xmlFi
 
 void CabbagePluginEditor::refreshComboListBoxContents()
 {
-    for ( int i = 0 ; i < processor.cabbageWidgets.getNumChildren() ; i++)
+    for ( int i = 0 ; i < cabbageProcessor.cabbageWidgets.getNumChildren() ; i++)
     {
-        const String type = CabbageWidgetData::getStringProp (processor.cabbageWidgets.getChild (i), CabbageIdentifierIds::type);
+        const String type = CabbageWidgetData::getStringProp (cabbageProcessor.cabbageWidgets.getChild (i), CabbageIdentifierIds::type);
 
         if ( type == "combobox" || type == "listbox")
         {
-            const String name = CabbageWidgetData::getStringProp (processor.cabbageWidgets.getChild (i), CabbageIdentifierIds::name);
-            const String fileType = CabbageWidgetData::getProperty (processor.cabbageWidgets.getChild (i), CabbageIdentifierIds::filetype);
+            const String name = CabbageWidgetData::getStringProp (cabbageProcessor.cabbageWidgets.getChild (i), CabbageIdentifierIds::name);
+            const String fileType = CabbageWidgetData::getProperty (cabbageProcessor.cabbageWidgets.getChild (i), CabbageIdentifierIds::filetype);
 
 
             if (CabbageComboBox* combo = dynamic_cast<CabbageComboBox*> (getComponentFromName (name)))
             {
                 if (fileType.isNotEmpty())
                 {
-                    combo->addItemsToCombobox (processor.cabbageWidgets.getChild (i));
+                    combo->addItemsToCombobox (cabbageProcessor.cabbageWidgets.getChild (i));
                 }
 
                 if(bool(combo->getProperties().getWithDefault("isPresetCombo", false)) == true)
@@ -1082,7 +1082,7 @@ void CabbagePluginEditor::refreshComboListBoxContents()
             {
                 if (fileType.isNotEmpty())
                 {
-                    listbox->addItemsToListbox(processor.cabbageWidgets.getChild (i));
+                    listbox->addItemsToListbox(cabbageProcessor.cabbageWidgets.getChild (i));
                 }
 
                 if(bool(listbox->getProperties().getWithDefault("isPresetCombo", false)) == true)
@@ -1096,7 +1096,7 @@ void CabbagePluginEditor::refreshComboListBoxContents()
 String CabbagePluginEditor::createNewGenericNameForPresetFile()
 {
     Array<File> dirFiles;
-    File pluginDir = processor.getCsdFile().getParentDirectory().getFullPathName();
+    File pluginDir = cabbageProcessor.getCsdFile().getParentDirectory().getFullPathName();
     pluginDir.findChildFiles (dirFiles, 2, false, "*.snaps");
     String newFileName;
 
@@ -1130,5 +1130,5 @@ String CabbagePluginEditor::createNewGenericNameForPresetFile()
 //======================================================================================================
 const String CabbagePluginEditor::getCsoundOutputFromProcessor()
 {
-    return processor.getCsoundOutput();
+    return cabbageProcessor.getCsoundOutput();
 }

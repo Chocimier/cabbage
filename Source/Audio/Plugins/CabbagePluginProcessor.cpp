@@ -83,15 +83,15 @@ createPluginFilter() {
     if(CabbageUtilities::getHeaderInfo(csdString, "nchnls_i") != -1 && CabbageUtilities::getHeaderInfo(csdString, "nchnls_i") != 0)
         numInChannels = CabbageUtilities::getHeaderInfo(csdString, "nchnls_i")-sideChainChannels;
  
-#if !Cabbage_IDE_Build && !Cabbage_Lite
+#if !Cabbage_IDE_Build && !Cabbage_Lite  
 	PluginHostType pluginHostType;
     if (sideChainChannels != 0)
         return new CabbagePluginProcessor(csdFile, AudioChannelSet::canonicalChannelSet(numInChannels), AudioChannelSet::canonicalChannelSet(numOutChannels), AudioChannelSet::canonicalChannelSet(sideChainChannels));
     else
         return new CabbagePluginProcessor(csdFile, AudioChannelSet::canonicalChannelSet(numInChannels), AudioChannelSet::canonicalChannelSet(numOutChannels));
 
-#else
-
+#else  
+      
 	if (sideChainChannels != 0)
 		return new CabbagePluginProcessor(csdFile, AudioChannelSet::discreteChannels(numInChannels), AudioChannelSet::discreteChannels(numOutChannels), AudioChannelSet::discreteChannels(sideChainChannels));
 	else
@@ -621,7 +621,7 @@ void CabbagePluginProcessor::generateCabbageCodeFromJS(PlantImportStruct &import
 }
 
 
-void CabbagePluginProcessor::getMacros(StringArray& linesFromCsd) {
+void CabbagePluginProcessor::getMacros(const StringArray& linesFromCsd) {
     var tempMacroNames, tempMacroStrings;
 
     for (String csdLine : linesFromCsd) //deal with Cabbage macros
@@ -1027,7 +1027,6 @@ void CabbagePluginProcessor::restorePluginState(XmlElement *xmlState) {
         initAllCsoundChannels(cabbageWidgets);
     }
 
-    xmlState = nullptr;
 }
 
 void CabbagePluginProcessor::setParametersFromXml(XmlElement *e)

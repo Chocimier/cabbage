@@ -158,13 +158,13 @@ public:
     //=============================================================================
 	virtual bool keyPressed(const KeyPress& key, Component* originatingComponent) override
 	{
-		processor.getCsound()->SetChannel("KEY_PRESSED", key.getKeyCode());
+		cabbageProcessor.getCsound()->SetChannel("KEY_PRESSED", key.getKeyCode());
 		return false;
 	}
 
 	virtual bool keyStateChanged(bool isKeyDown, Component* originatingComponent) override
 	{
-		processor.getCsound()->SetChannel ("KEY_DOWN", isKeyDown);
+        cabbageProcessor.getCsound()->SetChannel ("KEY_DOWN", isKeyDown);
 		return false;
 	}
 	//=============================================================================
@@ -295,7 +295,7 @@ private:
         }
         ~ViewportContainer() {}
 
-        void paint(Graphics &g)
+        void paint(Graphics &g) override
         {
             Viewport* const viewportTmp = findParentComponentOfClass<Viewport>(); //Get the parent viewport
             if(viewportTmp != nullptr) //Check for nullness
@@ -320,7 +320,7 @@ private:
     int newlyAddedWidgetIndex = 10000;
 
     bool editModeEnabled = false;
-    CabbagePluginProcessor& processor;
+    CabbagePluginProcessor& cabbageProcessor;
     String instrumentName;
     juce::Point<int> instrumentBounds;
     SharedResourcePointer<TooltipWindow> tooltipWindow;
